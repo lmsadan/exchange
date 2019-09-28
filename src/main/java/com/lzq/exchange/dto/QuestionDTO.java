@@ -1,9 +1,10 @@
-package com.lzq.exchange.model;
+package com.lzq.exchange.dto;
 
+import com.lzq.exchange.model.User;
 import lombok.Data;
 
 @Data
-public class Question {
+public class QuestionDTO {
     private String title;
     private String description;
     private Long gmt_create;
@@ -13,5 +14,6 @@ public class Question {
     private Integer view_count;
     private Integer like_count;
     private String tag;
-
+    private String avatar_url;
+    private User user;
 }
