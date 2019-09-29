@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
 
 @Controller
 public class IndexController {
@@ -17,12 +16,23 @@ public class IndexController {
     @Autowired
     private QuestionService questionService;
 
+
     @GetMapping("/")
     public String index(Model model,
-                        @RequestParam(name = "page", defaultValue = "1")Integer page,
-                        @RequestParam(name = "size", defaultValue = "10")Integer size){
-        PaginationDTO paginationDTO = questionService.list(page,size);
+                        @RequestParam(name = "page", defaultValue = "1") Integer page,
+                        @RequestParam(name = "size", defaultValue = "10") Integer size,
+                        @RequestParam(name = "search", defaultValue = "", required = false) String search){
+        PaginationDTO paginationDTO;
+        if (search == null || search.equals("")){
+            paginationDTO = questionService.list(page,size);
+        }else {
+            paginationDTO = questionService.listSearch(page,size,null,search);
+        }
         model.addAttribute("pagination",paginationDTO);
+        model.addAttribute("search",search);
         return "index";
     }
+
+
+
 }

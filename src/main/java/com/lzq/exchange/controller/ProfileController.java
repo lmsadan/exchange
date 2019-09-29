@@ -25,6 +25,7 @@ public class ProfileController {
                           Model model,
                           @RequestParam(value = "page",defaultValue = "1")Integer page,
                           @RequestParam(value = "size",defaultValue = "7")Integer size,
+                          @RequestParam(name = "search", defaultValue = "", required = false) String search,
                           HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         if (user == null){
@@ -39,9 +40,13 @@ public class ProfileController {
             model.addAttribute("sectionName","最新回复");
         }
 
-        PaginationDTO paginationDTO = questionService.listId(user.getId(),page,size);
+        PaginationDTO paginationDTO;
+        if (search == null || search.equals("")){
+            paginationDTO = questionService.listId(page,size,user.getId());
+        }else {
+            paginationDTO = questionService.listSearch(page,size,user.getId(),search);
+        }
         model.addAttribute("pagination",paginationDTO);
-
         return "profile";
     }
 

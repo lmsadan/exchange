@@ -4,6 +4,7 @@ import com.lzq.exchange.dto.AccessTokenDTO;
 import com.lzq.exchange.dto.GithubUser;
 import com.lzq.exchange.mapper.UserMapper;
 import com.lzq.exchange.model.User;
+import com.lzq.exchange.model.UserExample;
 import com.lzq.exchange.provider.GithubProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -48,19 +50,27 @@ public class AuthorizeController {
 
         if(githubUser != null && githubUser.getId() !=null){
             String accountId = String.valueOf(githubUser.getId());
-            User byId = userMapper.findById(accountId);
-            if (byId != null && !byId.equals("")){
-                request.getSession().setAttribute("user",byId);
+            UserExample example = new UserExample();
+            example.createCriteria()
+                    .andAccountidEqualTo(accountId);
+            List<User> users = userMapper.selectByExample(example);
+            if (users.size() != 0){
+                users.get(0).setGmtmodified(System.currentTimeMillis());
+                request.getSession().setAttribute("user",users.get(0));
+                UserExample userExample = new UserExample();
+                userExample.createCriteria()
+                        .andIdEqualTo(users.get(0).getId());
+                userMapper.updateByExampleSelective(users.get(0),userExample);
                 return "redirect:/";
             }
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             user.setName(githubUser.getName());
-            user.setAccountId(accountId);
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
-            user.setAvatar_url(githubUser.getAvatar_url());
+            user.setAccountid(accountId);
+            user.setGmtcreate(System.currentTimeMillis());
+            user.setGmtmodified(user.getGmtcreate());
+            user.setAvatarUrl(githubUser.getAvatar_url());
             userMapper.insert(user);
             response.addCookie(new Cookie("token",token));
             return "redirect:/";
@@ -74,11 +84,9 @@ public class AuthorizeController {
     @GetMapping("/logout")
     public String logout(HttpServletRequest request,HttpServletResponse response){
         request.getSession().removeAttribute("user");
-        Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            cookie.setMaxAge(0);
-            response.addCookie(cookie);
-        }
+        Cookie cookie = new Cookie("token",null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return "redirect:/";
     }
 }

@@ -1,9 +1,19 @@
 body{
-    background-color: #efefef;
+    background-image: url("https://img03.sogoucdn.com/app/a/07/b4f5a091fb5c7d40d7b74893392a705b");
+    background-size: 100%;
 }
 .main{
     background-color: white;
+    opacity: 0.85;
     margin: 30px;
+}
+.head-nav{
+    padding-left: 250px;
+    padding-right: 100px;
+    opacity: 0.85;
+}
+.head-search{
+
 }
 .btn-publish{
     float: right;
@@ -20,4 +30,23 @@ body{
 }
 .profile .section{
     margin-top: 15px;
+}
+.divMarginOut{
+    margin-top: 90px;
+    margin-left: 250px;
+    margin-right: 250px;
+    min-height: 1000px;
+}
+.divMarginIn{
+    margin-top: 30px;
+    margin-left: 40px;
+    margin-right: 10px;
+}
+.liDiv{
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+.community-menu{
+    color: #999;
+    font-size: 13px;
 }
